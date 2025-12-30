@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Main Paper2Code application
+  paper2code:
+    build:
+      context: .
+      target: runtime
+    image: paper2code:latest
+    container_name: paper2code-app
+    volumes:
+      # Mount input PDFs directory
+      - ./papers:/app/papers:ro
+      # Mount output directory
+      - ./output:/app/output
+      # Mount Docker socket for code execution
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-opus-4-20250514}
+    # Override entrypoint for interactive use
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+    networks:
+      - paper2code-net
+
+  # Sandbox for running generated code
+  sandbox:
+    build:
+      context: .
+      target: sandbox
+    image: paper2code-sandbox:latest
+    container_name: paper2code-sandbox
+    # Security: No network access
+    network_mode: none
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Read-only root filesystem for security
+    read_only: true
+    # Temporary writable directories
+    tmpfs:
+      - /tmp:size=100M
+    volumes:
+      # Mount code directory as read-only
+      - ./generated:/app:ro
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  paper2code-net:
+    driver: bridge

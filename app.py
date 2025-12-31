@@ -143,7 +143,14 @@ TRANSLATIONS = {
         "about_content": """
 **Paper2Code** is an AI agent that automatically analyzes algorithms from scientific papers and converts them into executable Python code.
 
-**Features:** PDF parsing • Algorithm extraction • Code generation • Auto-testing
+**Key Features:**
+- 📄 **PDF Parsing**: Extract text, equations, and structure from academic papers
+- 🧠 **Algorithm Analysis**: AI understands pseudocode, flowcharts, and mathematical formulas
+- 💻 **Code Generation**: Generate clean, documented Python code
+- ▶️ **Auto Testing**: Automatically test generated code in a sandbox environment
+- 🔧 **Auto Debugging**: AI fixes errors and retries execution
+
+**Use Cases:** Research reproduction • Algorithm implementation • Educational tool
         """,
         "challenge_badge": "2026 AI Co-Scientist Challenge Korea",
         "sample_papers": "Try Sample Papers",
@@ -220,7 +227,14 @@ TRANSLATIONS = {
         "about_content": """
 **Paper2Code**는 과학 논문의 알고리즘을 분석하고 실행 가능한 Python 코드로 변환하는 AI 에이전트입니다.
 
-**기능:** PDF 파싱 • 알고리즘 추출 • 코드 생성 • 자동 테스트
+**주요 기능:**
+- 📄 **PDF 파싱**: 학술 논문에서 텍스트, 수식, 구조 추출
+- 🧠 **알고리즘 분석**: 의사코드, 플로우차트, 수학 공식 이해
+- 💻 **코드 생성**: 깔끔하고 문서화된 Python 코드 생성
+- ▶️ **자동 테스트**: 샌드박스 환경에서 생성된 코드 자동 테스트
+- 🔧 **자동 디버깅**: AI가 오류 수정 후 재실행
+
+**활용 분야:** 연구 재현 • 알고리즘 구현 • 교육 도구
         """,
         "challenge_badge": "2026 AI Co-Scientist Challenge Korea",
         "sample_papers": "샘플 논문 테스트",
@@ -718,25 +732,17 @@ def render_sidebar():
 
         # How it works - Visual Steps
         with st.expander(f"🔄 {t('how_it_works')}", expanded=True):
-            st.markdown(f"""
-**1. 📄 {t('step_1')}**
-{t('step_1_desc')}
-
-**2. 🔍 {t('step_2')}**
-{t('step_2_desc')}
-
-**3. 🧠 {t('step_3')}**
-{t('step_3_desc')}
-
-**4. 💻 {t('step_4')}**
-{t('step_4_desc')}
-
-**5. ▶️ {t('step_5')}**
-{t('step_5_desc')}
-
-**6. 📥 {t('step_6')}**
-{t('step_6_desc')}
-""")
+            steps_data = [
+                ("1", "📄", t('step_1'), t('step_1_desc')),
+                ("2", "🔍", t('step_2'), t('step_2_desc')),
+                ("3", "🧠", t('step_3'), t('step_3_desc')),
+                ("4", "💻", t('step_4'), t('step_4_desc')),
+                ("5", "▶️", t('step_5'), t('step_5_desc')),
+                ("6", "📥", t('step_6'), t('step_6_desc')),
+            ]
+            for num, emoji, title, desc in steps_data:
+                st.markdown(f"**{num}. {emoji} {title}**")
+                st.caption(desc)
 
         st.markdown("---")
 
@@ -750,7 +756,7 @@ def render_sidebar():
         st.markdown(f"[📚 {t('github_repo')}](https://github.com/yonghwan1106/paper2code)")
 
         st.markdown("---")
-        st.caption("Paper2Code v0.2.2")
+        st.caption("Paper2Code v0.2.3")
         st.caption("Powered by Claude AI")
 
 

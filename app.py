@@ -67,7 +67,7 @@ SAMPLE_PAPERS = {
         "estimated_tokens": 150000,
         "en": {
             "title": "Formal Algorithms for Transformers",
-            "description": "Complete pseudocode for Transformer components including Attention and GPT-2.",
+            "description": "Pseudocode for Transformer, Attention, and GPT-2.",
             "difficulty": "Hard",
             "algorithm": "Transformer/Attention",
             "time": "~10 min",

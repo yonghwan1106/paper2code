@@ -163,23 +163,14 @@ Return ONLY the JSON, no other text."""
 
         response = self.complete(prompt, system=system)
 
-        # Parse JSON from response
-        try:
-            # Try to extract JSON from response
-            json_match = response
-            if "```json" in response:
-                json_match = response.split("```json")[1].split("```")[0]
-            elif "```" in response:
-                json_match = response.split("```")[1].split("```")[0]
+        # Parse JSON from response (handle various formats)
+        result = self._parse_json_response(response)
 
-            return json.loads(json_match.strip())
-        except json.JSONDecodeError:
-            # Return raw response wrapped in structure
-            return {
-                "algorithms": [],
-                "raw_response": response,
-                "parse_error": True,
-            }
+        # Ensure algorithms key exists
+        if "algorithms" not in result and not result.get("parse_error"):
+            result["algorithms"] = []
+
+        return result
 
     def generate_code(self, algorithm_spec: dict, paper_context: str = "") -> dict:
         """
@@ -232,22 +223,8 @@ Return ONLY the JSON, no other text."""
 
         response = self.complete(prompt, system=system, max_tokens=16384)
 
-        # Parse JSON from response
-        try:
-            json_match = response
-            if "```json" in response:
-                json_match = response.split("```json")[1].split("```")[0]
-            elif "```" in response:
-                json_match = response.split("```")[1].split("```")[0]
-
-            return json.loads(json_match.strip())
-        except json.JSONDecodeError:
-            return {
-                "files": [],
-                "requirements": [],
-                "raw_response": response,
-                "parse_error": True,
-            }
+        # Parse JSON from response (handle various formats)
+        return self._parse_json_response(response)
 
     def debug_code(self, code: str, error: str, context: str = "") -> dict:
         """
@@ -289,22 +266,68 @@ Return ONLY the JSON, no other text."""
 
         response = self.complete(prompt, system=system)
 
-        try:
-            json_match = response
-            if "```json" in response:
-                json_match = response.split("```json")[1].split("```")[0]
-            elif "```" in response:
-                json_match = response.split("```")[1].split("```")[0]
+        # Parse JSON from response (handle various formats)
+        result = self._parse_json_response(response)
 
-            return json.loads(json_match.strip())
-        except json.JSONDecodeError:
-            return {
-                "fixed_code": code,
-                "explanation": "Failed to parse fix",
-                "raw_response": response,
-                "parse_error": True,
-            }
+        # Ensure fixed_code key exists on parse error
+        if result.get("parse_error") and "fixed_code" not in result:
+            result["fixed_code"] = code
+            result["explanation"] = "Failed to parse fix"
+
+        return result
 
     def get_token_usage(self) -> int:
         """Get total tokens used"""
         return self.total_tokens_used
+
+    def _parse_json_response(self, response: str) -> dict:
+        """
+        Parse JSON from LLM response, handling various formats.
+
+        Handles:
+        - Raw JSON: {"files": [...]}
+        - Markdown code blocks: ```json {...} ```
+        - Word prefix: json {...}
+        - Mixed formats with extra text
+
+        Args:
+            response: Raw LLM response
+
+        Returns:
+            Parsed dict or error dict
+        """
+        import re
+
+        # Try multiple parsing strategies
+        strategies = [
+            # Strategy 1: Direct JSON parse
+            lambda r: json.loads(r.strip()),
+            # Strategy 2: Extract from ```json ... ```
+            lambda r: json.loads(r.split("```json")[1].split("```")[0].strip())
+            if "```json" in r else None,
+            # Strategy 3: Extract from ``` ... ```
+            lambda r: json.loads(r.split("```")[1].split("```")[0].strip())
+            if r.count("```") >= 2 else None,
+            # Strategy 4: Handle "json {...}" format (word prefix without backticks)
+            lambda r: json.loads(re.sub(r"^json\s*", "", r.strip(), flags=re.IGNORECASE))
+            if r.strip().lower().startswith("json") else None,
+            # Strategy 5: Find JSON object by braces
+            lambda r: json.loads(r[r.find("{"):r.rfind("}") + 1])
+            if "{" in r and "}" in r else None,
+        ]
+
+        for strategy in strategies:
+            try:
+                result = strategy(response)
+                if result is not None and isinstance(result, dict):
+                    return result
+            except (json.JSONDecodeError, IndexError, ValueError, TypeError):
+                continue
+
+        # All strategies failed
+        return {
+            "files": [],
+            "requirements": [],
+            "raw_response": response[:1000] + "..." if len(response) > 1000 else response,
+            "parse_error": True,
+        }

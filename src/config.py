@@ -23,7 +23,7 @@ class LLMConfig(BaseModel):
     """LLM Configuration"""
 
     api_key: str = Field(default_factory=lambda: os.getenv("ANTHROPIC_API_KEY", ""))
-    model: str = Field(default_factory=lambda: os.getenv("CLAUDE_MODEL", "claude-opus-4-20250514"))
+    model: str = Field(default_factory=lambda: os.getenv("CLAUDE_MODEL", "claude-sonnet-4-5-20250929"))
     max_tokens: int = Field(default_factory=lambda: int(os.getenv("MAX_TOKENS", "8192")))
     temperature: float = Field(default_factory=lambda: float(os.getenv("TEMPERATURE", "0.1")))
 

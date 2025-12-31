@@ -97,11 +97,17 @@ TRANSLATIONS = {
         "api_key_warning": "Please enter your API key",
         "how_it_works": "How it works",
         "step_1": "Upload",
+        "step_1_desc": "Upload your PDF paper file.",
         "step_2": "Parse",
+        "step_2_desc": "Extract text and structure from the paper.",
         "step_3": "Analyze",
+        "step_3_desc": "AI analyzes and understands the algorithm.",
         "step_4": "Generate",
+        "step_4_desc": "Automatically generate Python code.",
         "step_5": "Execute",
+        "step_5_desc": "Test run the generated code.",
         "step_6": "Download",
+        "step_6_desc": "Download the completed code.",
         "links": "Links",
         "github_repo": "GitHub Repository",
         "upload_label": "Upload a Scientific Paper (PDF)",
@@ -168,11 +174,17 @@ TRANSLATIONS = {
         "api_key_warning": "API 키를 입력해주세요",
         "how_it_works": "작동 방식",
         "step_1": "업로드",
+        "step_1_desc": "PDF 논문 파일을 업로드합니다.",
         "step_2": "파싱",
+        "step_2_desc": "논문에서 텍스트와 구조를 추출합니다.",
         "step_3": "분석",
+        "step_3_desc": "AI가 알고리즘을 분석하고 이해합니다.",
         "step_4": "생성",
+        "step_4_desc": "Python 코드를 자동 생성합니다.",
         "step_5": "실행",
+        "step_5_desc": "생성된 코드를 테스트 실행합니다.",
         "step_6": "다운로드",
+        "step_6_desc": "완성된 코드를 다운로드합니다.",
         "links": "링크",
         "github_repo": "GitHub 저장소",
         "upload_label": "과학 논문 업로드 (PDF)",
@@ -705,19 +717,26 @@ def render_sidebar():
         st.markdown("---")
 
         # How it works - Visual Steps
-        st.markdown(f"### 🔄 {t('how_it_works')}")
+        with st.expander(f"🔄 {t('how_it_works')}", expanded=True):
+            st.markdown(f"""
+**1. 📄 {t('step_1')}**
+{t('step_1_desc')}
 
-        steps = [
-            ("📄", t("step_1")),
-            ("🔍", t("step_2")),
-            ("🧠", t("step_3")),
-            ("💻", t("step_4")),
-            ("▶️", t("step_5")),
-            ("📥", t("step_6")),
-        ]
+**2. 🔍 {t('step_2')}**
+{t('step_2_desc')}
 
-        for emoji, label in steps:
-            st.markdown(f"{emoji} {label}")
+**3. 🧠 {t('step_3')}**
+{t('step_3_desc')}
+
+**4. 💻 {t('step_4')}**
+{t('step_4_desc')}
+
+**5. ▶️ {t('step_5')}**
+{t('step_5_desc')}
+
+**6. 📥 {t('step_6')}**
+{t('step_6_desc')}
+""")
 
         st.markdown("---")
 
@@ -731,7 +750,7 @@ def render_sidebar():
         st.markdown(f"[📚 {t('github_repo')}](https://github.com/yonghwan1106/paper2code)")
 
         st.markdown("---")
-        st.caption("Paper2Code v0.2.1")
+        st.caption("Paper2Code v0.2.2")
         st.caption("Powered by Claude AI")
 
 

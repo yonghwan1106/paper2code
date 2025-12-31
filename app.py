@@ -716,24 +716,13 @@ def render_sidebar():
             ("📥", t("step_6")),
         ]
 
-        step_html = '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">'
         for emoji, label in steps:
-            step_html += f'''
-            <div style="background: #f1f5f9; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 0.8rem;">
-                {emoji} {label}
-            </div>
-            '''
-        step_html += '</div>'
-        st.markdown(step_html, unsafe_allow_html=True)
+            st.markdown(f"{emoji} {label}")
 
         st.markdown("---")
 
         # Rate Limit Warning
-        st.markdown(f"""
-        <div class="info-box">
-            ⚡ {t('rate_limit_warning')}
-        </div>
-        """, unsafe_allow_html=True)
+        st.info(f"⚡ {t('rate_limit_warning')}")
 
         st.markdown("---")
 
@@ -777,17 +766,15 @@ def render_sample_papers():
         est_cost = estimate_cost(info["estimated_tokens"])
 
         with cols[idx]:
-            st.markdown(f"""
-            <div class="sample-card">
-                <span class="difficulty-badge {difficulty_class}">{info["difficulty"]}</span>
-                <h4>{info["title"]}</h4>
-                <p>{info["description"]}</p>
-                <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.75rem;">
-                    🤖 {info["algorithm"]}<br>
-                    ⏱️ {info["time"]} • 🪙 ~${est_cost:.2f}
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"""<div class="sample-card">
+<span class="difficulty-badge {difficulty_class}">{info["difficulty"]}</span>
+<h4>{info["title"]}</h4>
+<p>{info["description"]}</p>
+<p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.75rem;">
+🤖 {info["algorithm"]}<br>
+⏱️ {info["time"]} • 🪙 ~${est_cost:.2f}
+</p>
+</div>""", unsafe_allow_html=True)
 
             col1, col2 = st.columns(2)
             with col1:
@@ -803,12 +790,7 @@ def render_sample_papers():
         info = get_sample_info(sample_key)
 
         st.markdown("---")
-        st.markdown(f"""
-        <div class="info-box">
-            ✅ <strong>{t('select_sample')}:</strong> {info['title']}<br>
-            <span style="font-size: 0.8rem;">🪙 {t('estimated_tokens')}: ~{info['estimated_tokens']:,} • 💰 {t('estimated_cost')}: ~${estimate_cost(info['estimated_tokens']):.2f}</span>
-        </div>
-        """, unsafe_allow_html=True)
+        st.success(f"✅ **{t('select_sample')}:** {info['title']} | 🪙 {t('estimated_tokens')}: ~{info['estimated_tokens']:,} • 💰 {t('estimated_cost')}: ~${estimate_cost(info['estimated_tokens']):.2f}")
 
         # Progress indicator
         progress_placeholder = st.empty()
@@ -848,13 +830,11 @@ def render_sample_papers_preview():
         difficulty_class = get_difficulty_class(info["difficulty"])
 
         with cols[idx]:
-            st.markdown(f"""
-            <div class="sample-card" style="opacity: 0.6;">
-                <span class="difficulty-badge {difficulty_class}">{info["difficulty"]}</span>
-                <h4>{info["title"]}</h4>
-                <p>{info["description"]}</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"""<div class="sample-card" style="opacity: 0.6;">
+<span class="difficulty-badge {difficulty_class}">{info["difficulty"]}</span>
+<h4>{info["title"]}</h4>
+<p>{info["description"]}</p>
+</div>""", unsafe_allow_html=True)
             st.link_button(f"📄 {t('view_arxiv')}", f"https://arxiv.org/abs/{info['arxiv']}", use_container_width=True)
 
 
@@ -867,19 +847,9 @@ def render_results(result, output_dir):
 
     # Status Banner
     if status == "success":
-        st.markdown(f"""
-        <div class="success-banner">
-            <span style="font-size: 1.5rem;">✅</span>
-            <span>{t('success_msg')}</span>
-        </div>
-        """, unsafe_allow_html=True)
+        st.success(f"✅ {t('success_msg')}")
     else:
-        st.markdown(f"""
-        <div class="error-banner">
-            <span style="font-size: 1.25rem;">❌</span>
-            {t('status_msg')}: {status}
-        </div>
-        """, unsafe_allow_html=True)
+        st.error(f"❌ {t('status_msg')}: {status}")
         if result.get("error_message"):
             st.error(result["error_message"])
 
@@ -898,13 +868,7 @@ def render_results(result, output_dir):
 
     for col, label, value, emoji in stats:
         with col:
-            st.markdown(f"""
-            <div class="stat-card">
-                <div style="font-size: 1.5rem;">{emoji}</div>
-                <div class="stat-value">{value}</div>
-                <div class="stat-label">{label}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.metric(label=f"{emoji} {label}", value=value)
 
     st.markdown("<br>", unsafe_allow_html=True)
 

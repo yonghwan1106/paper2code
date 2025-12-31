@@ -325,20 +325,9 @@ st.markdown("""
 
 
 def get_api_key():
-    """Get API key from various sources."""
-    # Priority: session_state > streamlit secrets > environment
-    if st.session_state.get("api_key"):
-        return st.session_state.api_key
-
-    # Try Streamlit Cloud secrets
-    try:
-        if hasattr(st, 'secrets') and "ANTHROPIC_API_KEY" in st.secrets:
-            return st.secrets["ANTHROPIC_API_KEY"]
-    except Exception:
-        pass
-
-    # Fall back to environment variable
-    return os.environ.get("ANTHROPIC_API_KEY")
+    """Get API key from session state only (user must enter in sidebar)."""
+    # Only use session_state - requires user to enter API key
+    return st.session_state.get("api_key")
 
 
 def check_api_key():

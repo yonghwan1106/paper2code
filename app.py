@@ -324,9 +324,26 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+def get_api_key():
+    """Get API key from various sources."""
+    # Priority: session_state > streamlit secrets > environment
+    if st.session_state.get("api_key"):
+        return st.session_state.api_key
+
+    # Try Streamlit Cloud secrets
+    try:
+        if hasattr(st, 'secrets') and "ANTHROPIC_API_KEY" in st.secrets:
+            return st.secrets["ANTHROPIC_API_KEY"]
+    except Exception:
+        pass
+
+    # Fall back to environment variable
+    return os.environ.get("ANTHROPIC_API_KEY")
+
+
 def check_api_key():
     """Check if API key is configured."""
-    api_key = os.environ.get("ANTHROPIC_API_KEY") or st.session_state.get("api_key")
+    api_key = get_api_key()
     return api_key is not None and len(api_key) > 0
 
 
@@ -556,7 +573,7 @@ def render_sample_papers():
 
                 result, output_dir = process_paper_from_path(
                     str(sample_path),
-                    st.session_state.api_key,
+                    get_api_key(),
                 )
 
                 st.session_state.result = result
@@ -628,7 +645,7 @@ def render_main():
             try:
                 result, output_dir = process_paper(
                     uploaded_file,
-                    st.session_state.api_key,
+                    get_api_key(),
                 )
 
                 st.session_state.result = result

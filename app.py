@@ -731,7 +731,7 @@ def render_sidebar():
         st.markdown(f"[📚 {t('github_repo')}](https://github.com/yonghwan1106/paper2code)")
 
         st.markdown("---")
-        st.caption("Paper2Code v0.2.0")
+        st.caption("Paper2Code v0.2.1")
         st.caption("Powered by Claude AI")
 
 
